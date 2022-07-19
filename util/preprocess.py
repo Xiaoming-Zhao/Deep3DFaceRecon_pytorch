@@ -133,7 +133,7 @@ def align_for_lm(img, five_points):
 
 
 # resize and crop images for face reconstruction
-def resize_n_crop_img(img, lm, t, s, target_size=224., mask=None):
+def resize_n_crop_img(img, lm, t, s, target_size=224., mask=None, depth=None):
     w0, h0 = img.size
     w = (w0*s).astype(np.int32)
     h = (h0*s).astype(np.int32)
@@ -148,13 +148,17 @@ def resize_n_crop_img(img, lm, t, s, target_size=224., mask=None):
     if mask is not None:
         mask = mask.resize((w, h), resample=Image.BICUBIC)
         mask = mask.crop((left, up, right, below))
+    
+    if depth is not None:
+        depth = depth.resize((w, h), resample=Image.NEAREST)
+        depth = depth.crop((left, up, right, below))
 
     lm = np.stack([lm[:, 0] - t[0] + w0/2, lm[:, 1] -
                   t[1] + h0/2], axis=1)*s
     lm = lm - np.reshape(
             np.array([(w/2 - target_size/2), (h/2-target_size/2)]), [1, 2])
 
-    return img, lm, mask
+    return img, lm, mask, depth
 
 # utils for face reconstruction
 def extract_5p(lm):
@@ -165,7 +169,7 @@ def extract_5p(lm):
     return lm5p
 
 # utils for face reconstruction
-def align_img(img, lm, lm3D, mask=None, target_size=224., rescale_factor=102.):
+def align_img(img, lm, lm3D, mask=None, depth=None, target_size=224., rescale_factor=102.):
     """
     Return:
         transparams        --numpy.array  (raw_W, raw_H, scale, tx, ty)
@@ -191,10 +195,13 @@ def align_img(img, lm, lm3D, mask=None, target_size=224., rescale_factor=102.):
     s = rescale_factor/s
 
     # processing the image
-    img_new, lm_new, mask_new = resize_n_crop_img(img, lm, t, s, target_size=target_size, mask=mask)
+    img_new, lm_new, mask_new, depth_new = resize_n_crop_img(img, lm, t, s, target_size=target_size, mask=mask, depth=depth)
     trans_params = np.array([w0, h0, s, t[0], t[1]])
 
-    return trans_params, img_new, lm_new, mask_new
+    if depth is None:
+        return trans_params, img_new, lm_new, mask_new
+    else:
+        return trans_params, img_new, lm_new, mask_new, depth_new
 
 # utils for face recognition model
 def estimate_norm(lm_68p, H):

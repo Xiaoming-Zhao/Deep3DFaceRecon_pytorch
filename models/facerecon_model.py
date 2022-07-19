@@ -135,7 +135,7 @@ class FaceReconModel(BaseModel):
         self.facemodel.to(self.device)
         self.pred_vertex, self.pred_tex, self.pred_color, self.pred_lm = \
             self.facemodel.compute_for_render(output_coeff)
-        self.pred_mask, _, self.pred_face = self.renderer(
+        self.pred_mask, self.pred_depth, self.pred_face = self.renderer(
             self.pred_vertex, self.facemodel.face_buf, feat=self.pred_color)
         
         self.pred_coeffs_dict = self.facemodel.split_coeff(output_coeff)
