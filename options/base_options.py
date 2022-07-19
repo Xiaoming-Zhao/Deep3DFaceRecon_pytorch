@@ -47,6 +47,8 @@ class BaseOptions():
         parser.add_argument('--suffix', default='', type=str, help='customized suffix: opt.name = opt.name + suffix: e.g., {model}_{netG}_size{load_size}')
 
         # NOTE: self-added
+        parser.add_argument('--gmpi_root', default="", type=str)
+        parser.add_argument('--gmpi_img_res', default=256, type=int)
         parser.add_argument('--gmpi_img_root', default='', type=str)
         parser.add_argument('--gmpi_depth_root', default='', type=str)
         parser.add_argument('--gmpi_detect_root', default='', type=str)

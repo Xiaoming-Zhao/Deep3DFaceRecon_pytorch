@@ -18,8 +18,11 @@ from scipy.io import loadmat, savemat
 
 def get_data_path(img_root, detect_root):
 
-    with open(os.path.join(detect_root, "fail_list.txt"), "r") as f:
-        fail_list = [_.strip() for _ in f.readlines()]
+    if os.path.exists(os.path.join(detect_root, "fail_list.txt")):
+        with open(os.path.join(detect_root, "fail_list.txt"), "r") as f:
+            fail_list = [_.strip() for _ in f.readlines()]
+    else:
+        fail_list = []
 
     all_im_path = [
         os.path.join(img_root, i)
@@ -100,7 +103,7 @@ def main(rank, opt, img_root, detect_root):
 if __name__ == "__main__":
     opt = TestOptions().parse()  # get test options
 
-    img_root = "runtime_dataset/metfaces1024x1024_xflip"
-    detect_root = "runtime_dataset/metfaces_detect"
+    img_root = os.path.join(opt.gmpi_root, "runtime_dataset/metfaces1024x1024_xflip")
+    detect_root = os.path.join(opt.gmpi_root, "runtime_dataset/metfaces_detect/detections")
 
     main(0, opt, img_root, detect_root)

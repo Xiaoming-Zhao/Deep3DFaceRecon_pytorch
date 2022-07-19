@@ -93,6 +93,8 @@ def main(rank, opt, input_zipf, detect_root):
     )
     os.makedirs(save_dir, exist_ok=True)
 
+    print("\nsave_dir: ", save_dir, "\n")
+
     BATCH_N = 20
 
     for i in tqdm.tqdm(range(len(im_path))):
@@ -119,8 +121,8 @@ def main(rank, opt, input_zipf, detect_root):
 if __name__ == "__main__":
     opt = TestOptions().parse()  # get test options
 
-    img_res = 1024
-    input_zipf = f"runtime_dataset/ffhq{img_res}x{img_res}.zip"
-    detect_root = f"runtime_dataset/mtcnn_ffhq_{img_res}/mtcnn_ffhq_{img_res}}"
+    img_res = opt.gmpi_img_res
+    input_zipf = os.path.join(opt.gmpi_root, f"runtime_dataset/ffhq{img_res}x{img_res}.zip")
+    detect_root = os.path.join(opt.gmpi_root, f"runtime_dataset/mtcnn_ffhq_{img_res}/detections")
 
     main(0, opt, input_zipf, detect_root)
